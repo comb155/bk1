@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <title>小学生黄金阅读书单 · 大字适配版</title>
+    <style>
+        :root {
+            /* 左侧配色 - 核心蓝 */
+            --left-main: #1E88E5;
+            --left-light: #EBF5FF;
+            --left-dark: #0D47A1;
+            --left-gradient: linear-gradient(135deg, #2196F3, #1565C0);
+
+            /* 右侧配色 - 拓展橙 */
+            --right-main: #F39C12;
+            --right-light: #FFF9EB;
+            --right-dark: #B9770E;
+            --right-gradient: linear-gradient(135deg, #F1C40F, #E67E22);
+
+            --bg-color: #F4F7F6;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.65;
+            color: #2C3E50;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            font-size: 18px; /* 基础字体增大，手机阅读更轻松 */
+            -webkit-text-size-adjust: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1A252F;
+            font-size: 24px;
+            margin: 6px 0 12px;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
+        }
+        h2 .live-read{ color:#27AE60; }
+
+        h3 {
+            font-size: 20px;
+            color: #fff;
+            margin: 0 0 4px;
+            text-align: center;
+            padding: 10px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* ===== 统计面板（紧凑但字大） ===== */
+        .stats-container {
+            background: var(--card-bg);
+            padding: 14px 16px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            margin: 0 auto 16px;
+            max-width: 1200px;
+        }
+        .stat-cards{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:10px;
+            margin-bottom:12px;
+        }
+        .stat-card{
+            border-radius: 10px;
+            padding:10px 6px;
+            text-align:center;
+            border:1px solid #eee;
+        }
+        .stat-card .v{ font-size:30px; font-weight:800; line-height:1.2; }
+        .stat-card .l{ font-size:15px; color:#7f8c8d; margin-top:2px; }
+        .sc-total{ background:#F4F7F9; } .sc-total .v{ color:#2C3E50; }
+        .sc-read { background:#EAFAF1; } .sc-read  .v{ color:#27AE60; }
+        .sc-unread{background:#FDEDEC;} .sc-unread .v{ color:#E74C3C; }
+        .sc-pct  { background:#F4F6FB; } .sc-pct   .v{ color:#8E44AD; }
+
+        .bar{
+            height:16px; background:#ECEFF1; border-radius:999px; overflow:hidden;
+        }
+        .bar-fill{
+            height:100%; width:0%; border-radius:999px;
+            background:linear-gradient(90deg,#27AE60,#58D68D);
+            transition:width .28s ease;
+        }
+
+        .stage-progress{
+            display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px;
+        }
+        .sp-item{ font-size:15px; }
+        .sp-head{ display:flex; justify-content:space-between; color:#5D6D7E; margin-bottom:5px; font-size:15px; }
+        .sp-bar{ height:10px; background:#ECEFF1; border-radius:999px; overflow:hidden; }
+        .sp-bar > i{ display:block; height:100%; width:0%; border-radius:999px; transition:width .28s ease; }
+        .sp-low > i{ background:var(--left-main); }
+        .sp-mid > i{ background:#9B59B6; }
+        .sp-high> i{ background:var(--right-main); }
+
+        .tool-row{
+            display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+            margin-top:14px; padding-top:12px; border-top:1px dashed #E5E8E8;
+        }
+        .tool-row .lab{ font-size:16px; color:#7f8c8d; }
+        .chip{
+            border:1px solid #D5DBDB; background:#fff; color:#5D6D7E;
+            border-radius:999px; padding:6px 16px; font-size:16px; cursor:pointer;
+            font-family:inherit; transition: all 0.2s;
+        }
+        .chip:hover{ border-color:#95A5A6; }
+        .chip.on{ background:#2C3E50; border-color:#2C3E50; color:#fff; }
+        .chip.danger{ margin-left:auto; color:#C0392B; border-color:#F1948A; }
+        .chip.danger:hover{ background:#FDEDEC; }
+
+        /* ===== 添加自定义书目 ===== */
+        .add-box{
+            background:var(--card-bg); border:1px dashed #BDC3C7; border-radius:14px;
+            padding:14px 16px; margin:0 auto 16px; max-width:1200px;
+            display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+            box-shadow:0 2px 8px rgba(0,0,0,0.03);
+        }
+        .add-box .t{ font-size:17px; font-weight:700; color:#34495E; margin-right:2px; }
+        .add-box input[type=text]{
+            border:1px solid #D5DBDB; border-radius:8px; padding:8px 12px; font-size:16px;
+            font-family:inherit; outline:none;
+        }
+        .add-box input[type=text]:focus{ border-color:var(--left-main); }
+        .add-box input#bkTitle{ flex:1 1 200px; min-width:160px; }
+        .add-box input#bkAuthor{ flex:0 1 150px; min-width:110px; }
+        .add-box select{
+            border:1px solid #D5DBDB; border-radius:8px; padding:8px 8px; font-size:16px;
+            font-family:inherit; background:#fff; color:#34495E; outline:none;
+        }
+        .add-box button{
+            background:var(--left-main); color:#fff; border:none; border-radius:8px;
+            padding:9px 22px; font-size:16px; font-weight:700; cursor:pointer; font-family:inherit;
+            transition: background 0.2s;
+        }
+        .add-box button:hover{ background:#1565C0; }
+        .add-msg{ font-size:15px; color:#27AE60; min-width:70px; }
+
+        /* ===== 两栏布局容器 ===== */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .column {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+        }
+        .column > p.sub{
+            font-size:15px; color:#7f8c8d; text-align:center; margin:0 0 8px;
+        }
+
+        .left-stage { background: var(--left-gradient); }
+        .right-stage { background: var(--right-gradient); }
+
+        .stage-title {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 18px 0 10px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            letter-spacing: 0.5px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .category-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 9px;
+            margin-top: 14px;
+            font-size: 17px;
+        }
+
+        .left-cat { background-color: var(--left-light); color: var(--left-dark); }
+        .right-cat { background-color: var(--right-light); color: var(--right-dark); }
+
+        .cat-badge {
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .left-badge { background-color: var(--left-main); }
+        .right-badge { background-color: var(--right-main); }
+
+        ul.book-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.book-list li {
+            padding: 0;
+            border-bottom: 1px dashed #E0E6ED;
+            font-size: 17px;
+        }
+        ul.book-list li.custom-item{
+            display:flex; align-items:flex-start; gap:2px;
+        }
+
+        .book-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 8px;
+            cursor: pointer;
+            width: 100%;
+            user-select: none;
+            border-radius: 8px;
+            transition: background-color 0.15s;
+        }
+
+        .left-column .book-label:hover { background-color: #F0F7FF; }
+        .right-column .book-label:hover { background-color: #FFFBF0; }
+
+        .book-text {
+            flex: 1;
+            padding-right: 12px;
+            word-break: break-word;
+            font-size: 17px; /* 保持清晰 */
+            line-height: 1.6;
+        }
+
+        .tag {
+            font-size: 12.5px;
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 5px;
+            margin-right: 5px;
+            vertical-align: middle;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .tag-math { background: #3498DB; }
+        .tag-bio { background: #2ECC71; }
+        .tag-phy { background: #9B59B6; }
+        .tag-chem { background: #E74C3C; }
+        .tag-new { background: #E67E22; }
+        .tag-bridge { background: #1ABC9C; }
+        .tag-psy { background: #F1C40F; color:#2C3E50; }
+        .tag-phil { background: #8E44AD; }
+        .tag-award-wj { background: #D35400; }
+        .tag-award-hs { background: #C0392B; }
+        .tag-nature { background: #27AE60; }
+        .tag-custom { background: #34495E; }
+
+        .book-check {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            margin-top: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .book-check:active { transform: scale(1.08); }
+
+        .left-column .book-check { accent-color: var(--left-main); }
+        .right-column .book-check { accent-color: var(--right-main); }
+
+        .book-check:checked + .book-text {
+            color: #A0AAB5;
+            text-decoration: line-through;
+        }
+
+        .del-btn{
+            background:none; border:none; color:#BDC3C7; font-size:24px; line-height:1;
+            cursor:pointer; padding:8px 6px 0 0; font-family:inherit;
+        }
+        .del-btn:hover{ color:#E74C3C; }
+
+        .empty-tip{
+            display:none; text-align:center; color:#95A5A6; font-size:17px;
+            padding:20px 0;
+        }
+
+        .save-tip{
+            text-align:center; color:#95A5A6; font-size:15px; margin:20px 0 6px;
+        }
+
+        /* ===== 手机大屏自适应：字体大、触控友好 ===== */
+        @media (max-width: 800px) {
+            body {
+                padding: 8px;
+                font-size: 18px;
+            }
+            .grid-container { grid-template-columns: 1fr; gap: 14px; }
+            .column { padding: 12px; }
+            .stat-cards{ grid-template-columns:repeat(2,1fr); }
+            .stage-progress{ grid-template-columns:1fr; gap:10px; }
+            .add-box input#bkAuthor{ flex:1 1 100%; }
+            .add-box .t{ width:100%; margin-bottom:6px; }
+            .add-box button{ padding:10px 20px; font-size:17px; }
+            .chip{ padding:7px 16px; font-size:16px; }
+            .book-text { font-size: 18px; }  /* 手机上进一步加大正文字体 */
+            .stat-card .v{ font-size:32px; }
+            .stat-card .l{ font-size:16px; }
+        }
+
+        /* 超小屏优化 */
+        @media (max-width: 400px) {
+            .book-text { font-size: 17px; }
+            .stat-card .v{ font-size:28px; }
+            .category-title { font-size: 16px; }
+            .stage-title { font-size: 17px; }
+            .add-box .t { font-size: 16px; }
+        }
+
+        @media print {
+            .add-box, .tool-row, .del-btn, .save-tip { display:none !important; }
+            .stats-container, .column { box-shadow:none; border:1px solid #ddd; }
+            body { background:#fff; font-size:12px; }
+            h2 { font-size:16px; } h3 { font-size:14px; }
+            ul.book-list li { font-size:11px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📚 小学生黄金阅读书单 · 已读 <span class="live-read" id="hdRead">0</span>/<span id="hdTotal">58</span> 本</h2>
+
+    <!-- ===== 实时统计 ===== -->
+    <div class="stats-container">
+        <div class="stat-cards">
+            <div class="stat-card sc-total"><div class="v" id="sTotal">58</div><div class="l">书目总数</div></div>
+            <div class="stat-card sc-read"><div class="v" id="sRead">0</div><div class="l">已读</div></div>
+            <div class="stat-card sc-unread"><div class="v" id="sUnread">58</div><div class="l">未读</div></div>
+            <div class="stat-card sc-pct"><div class="v"><span id="sPct">0</span>%</div><div class="l">完成度</div></div>
+        </div>
+        <div class="bar"><div class="bar-fill" id="sBar"></div></div>
+
+        <div class="stage-progress">
+            <div class="sp-item sp-low">
+                <div class="sp-head"><span>小学低段 1-2年级</span><span id="tLow">0/16</span></div>
+                <div class="sp-bar"><i id="bLow"></i></div>
+            </div>
+            <div class="sp-item sp-mid">
+                <div class="sp-head"><span>小学中段 3-4年级</span><span id="tMid">0/18</span></div>
+                <div class="sp-bar"><i id="bMid"></i></div>
+            </div>
+            <div class="sp-item sp-high">
+                <div class="sp-head"><span>小学高段 5-6年级</span><span id="tHigh">0/24</span></div>
+                <div class="sp-bar"><i id="bHigh"></i></div>
+            </div>
+        </div>
+
+        <div class="tool-row">
+            <span class="lab">筛选：</span>
+            <button class="chip on" data-f="all">全部</button>
+            <button class="chip" data-f="unread">未读</button>
+            <button class="chip" data-f="read">已读</button>
+            <button class="chip danger" id="btnClear">清空勾选</button>
+        </div>
+    </div>
+
+    <!-- ===== 添加自定义书目 ===== -->
+    <div class="add-box">
+        <span class="t">➕ 添加自定义书目</span>
+        <input type="text" id="bkTitle" placeholder="书名（必填）">
+        <input type="text" id="bkAuthor" placeholder="作者（选填）">
+        <select id="bkStage">
+            <option value="low">小学低段</option>
+            <option value="mid" selected>小学中段</option>
+            <option value="high">小学高段</option>
+        </select>
+        <select id="bkCol">
+            <option value="L">核心必读</option>
+            <option value="R" selected>拓展补充</option>
+        </select>
+        <select id="bkCat">
+            <option value="lit" selected>文学</option>
+            <option value="sci">科学</option>
+            <option value="hum">人文</option>
+        </select>
+        <button id="btnAdd">添加</button>
+        <span class="add-msg" id="addMsg"></span>
+    </div>
+
+    <!-- 双栏布局开始 -->
+    <div class="grid-container">
+        
+        <!-- 左侧栏：核心必读 30本 -->
+        <div class="column left-column">
+            <h3 style="background: var(--left-gradient);">📖 核心必读 (精选30本)</h3>
+            <p class="sub">构建最底层的精神底色与知识框架。</p>
+            
+            <!-- 低段 -->
+            <div class="stage-title left-stage">小学低段（1-2年级，10本）</div>
+            
+            <div class="category-title left-cat">文学 <span class="cat-badge left-badge">6本</span></div>
+            <ul class="book-list" id="L-low-lit" data-stage="low">
+                <li><label class="book-label"><span class="book-text">1. 《三毛流浪记》 张乐平/绘</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《没头脑和不高兴》 任溶溶/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">3. 《小猪唏哩呼噜》 孙幼军/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">4. 《稻草人》 叶圣陶/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">5. 《猜猜我有多爱你》 [爱尔兰]麦克布雷尼/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">6. 《不一样的卡梅拉》 [法]约里波瓦/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">科学 <span class="cat-badge left-badge">2本</span></div>
+            <ul class="book-list" id="L-low-sci" data-stage="low">
+                <li><label class="book-label"><span class="book-text">1. 《第一次发现》 法国伽利玛出版社/编</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《神奇校车》（绘本版） [美]乔安娜·柯尔/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">人文 <span class="cat-badge left-badge">2本</span></div>
+            <ul class="book-list" id="L-low-hum" data-stage="low">
+                <li><label class="book-label"><span class="book-text">1. 《千字文、三字经、弟子规》 周兴嗣等/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-phil">思辨</span>2. 《写给孩子的哲学启蒙书》 [法]碧姬·拉贝/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <!-- 中段 -->
+            <div class="stage-title left-stage">小学中段（3-4年级，10本）</div>
+            
+            <div class="category-title left-cat">文学 <span class="cat-badge left-badge">5本</span></div>
+            <ul class="book-list" id="L-mid-lit" data-stage="mid">
+                <li><label class="book-label"><span class="book-text">1. 《宝葫芦的秘密》 张天翼/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《安徒生童话》 [丹麦]安徒生/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">3. 《长袜子皮皮》 [瑞典]林格伦/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">4. 《亲爱的汉修先生》 [美]贝芙莉·克莱瑞/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">5. 《下雨的书店》 [日]日向理惠子/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">科学 <span class="cat-badge left-badge">2本</span></div>
+            <ul class="book-list" id="L-mid-sci" data-stage="mid">
+                <li><label class="book-label"><span class="book-text">1. 《奇妙的数王国》 李毓佩/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《神奇校车》（阅读版） [美]乔安娜·柯尔/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">人文 <span class="cat-badge left-badge">3本</span></div>
+            <ul class="book-list" id="L-mid-hum" data-stage="mid">
+                <li><label class="book-label"><span class="book-text">1. 《林汉达历史故事集》 林汉达/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《汉字的故事》 梅子涵/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">3. 《30天环游中国》 郑平等/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <!-- 高段 -->
+            <div class="stage-title left-stage">小学高段（5-6年级，10本）</div>
+            
+            <div class="category-title left-cat">文学 <span class="cat-badge left-badge">5本</span></div>
+            <ul class="book-list" id="L-high-lit" data-stage="high">
+                <li><label class="book-label"><span class="book-text">1. 《西游记》 吴承恩/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《草房子》 曹文轩/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">3. 《城南旧事》 林海音/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">4. 《小王子》 [法]圣埃克苏佩里/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">5. 《鲁滨逊漂流记》 [英]笛福/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">科学 <span class="cat-badge left-badge">3本</span></div>
+            <ul class="book-list" id="L-high-sci" data-stage="high">
+                <li><label class="book-label"><span class="book-text">1. 《昆虫记》 [法]法布尔/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《科学家故事100个》 叶永烈/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">3. 《地心游记》 [法]凡尔纳/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title left-cat">人文 <span class="cat-badge left-badge">2本</span></div>
+            <ul class="book-list" id="L-high-hum" data-stage="high">
+                <li><label class="book-label"><span class="book-text">1. 《上下五千年》 曹余章、林汉达/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《假如给我三天光明》 海伦·凯勒/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+        </div>
+
+        <!-- 右侧栏：拓展补充 28本 -->
+        <div class="column right-column">
+            <h3 style="background: var(--right-gradient);">🚀 拓展补充 (新增28本)</h3>
+            <p class="sub">补齐桥梁书、心理建设、理科启蒙、国学底蕴与权威大奖作品。</p>
+            
+            <!-- 低段 -->
+            <div class="stage-title right-stage">小学低段（1-2年级，6本）</div>
+            
+            <div class="category-title right-cat">文学 <span class="cat-badge right-badge">4本</span></div>
+            <ul class="book-list" id="R-low-lit" data-stage="low">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-bridge">桥梁</span>1. 《青蛙和蟾蜍》 [美]艾诺·洛贝尔/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-bridge">桥梁</span>2. 《字的童话》 林世仁/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-psy">心理</span>3. 《我的情绪小怪兽》 [西]安娜·耶纳斯/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-award-wj">文津奖</span>4. 《太阳和蜉蝣》 汤汤/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">科学 <span class="cat-badge right-badge">1本</span></div>
+            <ul class="book-list" id="R-low-sci" data-stage="low">
+                <li><label class="book-label"><span class="book-text">1. 《我的野生动物朋友》 [法]蒂皮·德格雷/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">人文 <span class="cat-badge right-badge">1本</span></div>
+            <ul class="book-list" id="R-low-hum" data-stage="low">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-award-wj">文津奖</span>1. 《五千年良渚王国》 刘斌等/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <!-- 中段 -->
+            <div class="stage-title right-stage">小学中段（3-4年级，8本）</div>
+            
+            <div class="category-title right-cat">文学 <span class="cat-badge right-badge">4本</span></div>
+            <ul class="book-list" id="R-mid-lit" data-stage="mid">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">现代</span>1. 《了不起的狐狸爸爸》 [英]罗尔德·达尔/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-psy">心理</span>2. 《窗边的小豆豆》 [日]黑柳彻子/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">经典</span>3. 《夏洛的网》 [美]E.B.怀特/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-award-hs">中国好书</span>4. 《云朵上的爸爸》 曾有情/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">科学 <span class="cat-badge right-badge">3本</span></div>
+            <ul class="book-list" id="R-mid-sci" data-stage="mid">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-math">数学</span>1. 《我是数学迷》 [美]辛迪·诺伊施万德/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-bio">生物</span>2. 《给小学生的趣味生物》 朱玉贤/主编</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-award-wj">文津奖</span><span class="tag tag-nature">自然</span>3. 《树孩》 赵丽宏/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">人文 <span class="cat-badge right-badge">1本</span></div>
+            <ul class="book-list" id="R-mid-hum" data-stage="mid">
+                <li><label class="book-label"><span class="book-text">1. 《书的故事》 [前苏联]伊林/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <!-- 高段 -->
+            <div class="stage-title right-stage">小学高段（5-6年级，14本）</div>
+            
+            <div class="category-title right-cat">文学 <span class="cat-badge right-badge">5本</span></div>
+            <ul class="book-list" id="R-high-lit" data-stage="high">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">奇幻</span>1. 《哈利·波特与魔法石》 [英]J.K.罗琳/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">奇幻</span>2. 《查理和巧克力工厂》 [英]罗尔德·达尔/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">经典</span>3. 《爱的教育》 [意]亚米契斯/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">经典</span>4. 《我的妈妈是精灵》 陈丹燕/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">5. 《爱丽丝漫游奇境记》 [英]刘易斯·卡罗尔/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">科学 <span class="cat-badge right-badge">4本</span></div>
+            <ul class="book-list" id="R-high-sci" data-stage="high">
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-phy">物理</span>1. 《10堂极简漫画物理课》 李永乐/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-chem">化学</span>2. 《这就是化学（升级新版）》 [美]World Book/编</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">前沿</span>3. 《万物简史（少儿版）》 [英]比尔·布莱森/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-new">科幻</span>4. 《刘慈欣少儿科幻系列》 刘慈欣/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+
+            <div class="category-title right-cat">人文 <span class="cat-badge right-badge">5本</span></div>
+            <ul class="book-list" id="R-high-hum" data-stage="high">
+                <li><label class="book-label"><span class="book-text">1. 《孔子的故事》 李长之/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text">2. 《少年音乐和美术故事》 丰子恺/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-phil">诸子</span>3. 《论语有智慧》 孟琢/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-phil">诸子</span>4. 《孟子有格局》 孟琢/著</span><input type="checkbox" class="book-check"></label></li>
+                <li><label class="book-label"><span class="book-text"><span class="tag tag-phil">诸子</span>5. 《庄子有哲思》 孟琢/著</span><input type="checkbox" class="book-check"></label></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="empty-tip" id="emptyTip">—— 当前筛选条件下没有书目 ——</div>
+    <p class="save-tip">☑ 勾选状态与自定义书目会自动保存在本机浏览器中（localStorage），换设备不会同步。</p>
+
+<script>
+(function () {
+    'use strict';
+
+    var KEY_READ   = 'xiaoxue_shudan_read_v1';
+    var KEY_CUSTOM = 'xiaoxue_shudan_custom_v1';
+
+    var STAGE_NAME = { low: '小学低段', mid: '小学中段', high: '小学高段' };
+    var CAT_NAME   = { lit: '文学', sci: '科学', hum: '人文' };
+
+    function load(key, fallback) {
+        try {
+            var raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch (e) { return fallback; }
+    }
+    function save(key, val) {
+        try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+    }
+
+    var readSet   = {};                 // { 书目文本: true }
+    var customList = load(KEY_CUSTOM, []); // [{id, title, author, stage, col, cat}]
+
+    (load(KEY_READ, [])).forEach(function (k) { readSet[k] = true; });
+
+    // 书目文本作为稳定 key（含序号+书名+作者）
+    function keyOf(input) {
+        var li = input.closest('li');
+        var txtEl = li.querySelector('.book-text');
+        if (!txtEl) return '';
+        return txtEl.textContent.trim().replace(/\s+/g, ' ');
+    }
+
+    /* ---------- 渲染自定义书目 ---------- */
+    function renderCustom() {
+        document.querySelectorAll('li.custom-item').forEach(function (n) { n.remove(); });
+
+        customList.forEach(function (b) {
+            var ul = document.getElementById(b.col + '-' + b.stage + '-' + b.cat);
+            if (!ul) return;
+            var li = document.createElement('li');
+            li.className = 'custom-item';
+            li.innerHTML =
+                '<label class="book-label">' +
+                  '<span class="book-text"><span class="tag tag-custom">自定义</span>＋ 《' + esc(b.title) + '》' +
+                  (b.author ? ' ' + esc(b.author) : '') + '</span>' +
+                  '<input type="checkbox" class="book-check">' +
+                '</label>' +
+                '<button class="del-btn" title="删除这本书">×</button>';
+            ul.appendChild(li);
+
+            var cb = li.querySelector('.book-check');
+            cb.checked = !!readSet[keyOf(cb)];
+            cb.addEventListener('change', onCheck);
+
+            li.querySelector('.del-btn').addEventListener('click', function () {
+                delete readSet[keyOf(cb)];
+                customList = customList.filter(function (x) { return x.id !== b.id; });
+                save(KEY_CUSTOM, customList); save(KEY_READ, Object.keys(readSet));
+                renderCustom();
+            });
+        });
+        applyFilter();
+        updateStats();
+    }
+
+    function esc(s) {
+        return String(s).replace(/[&<>"]/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+    }
+
+    /* ---------- 勾选 → 统计 ---------- */
+    function onCheck(e) {
+        var cb = e.target;
+        var k = keyOf(cb);
+        if (cb.checked) readSet[k] = true; else delete readSet[k];
+        save(KEY_READ, Object.keys(readSet));
+        updateStats();
+        if (currentFilter !== 'all') applyFilter();
+    }
+
+    function updateStats() {
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('.book-check'));
+        var total = boxes.length;
+        var read  = boxes.filter(function (b) { return b.checked; }).length;
+        var unread = total - read;
+        var pct = total ? Math.round(read * 100 / total) : 0;
+
+        set('sTotal', total); set('sRead', read); set('sUnread', unread); set('sPct', pct);
+        set('hdTotal', total); set('hdRead', read);
+        document.getElementById('sBar').style.width = pct + '%';
+
+        ['low', 'mid', 'high'].forEach(function (st) {
+            var bs = Array.prototype.slice.call(
+                document.querySelectorAll('ul[data-stage="' + st + '"] .book-check'));
+            var r = bs.filter(function (b) { return b.checked; }).length;
+            var t = bs.length;
+            set('t' + st.charAt(0).toUpperCase() + st.slice(1), r + '/' + t);
+            document.getElementById('b' + st.charAt(0).toUpperCase() + st.slice(1))
+                .style.width = (t ? Math.round(r * 100 / t) : 0) + '%';
+        });
+    }
+
+    function set(id, v) { document.getElementById(id).textContent = v; }
+
+    /* ---------- 筛选 ---------- */
+    var currentFilter = 'all';
+
+    function applyFilter() {
+        var anyVisible = false;
+        document.querySelectorAll('ul.book-list').forEach(function (ul) {
+            var vis = 0;
+            ul.querySelectorAll('li').forEach(function (li) {
+                var cb = li.querySelector('.book-check');
+                var show = currentFilter === 'all'
+                        || (currentFilter === 'read' && cb.checked)
+                        || (currentFilter === 'unread' && !cb.checked);
+                li.style.display = show ? '' : 'none';
+                if (show) vis++;
+            });
+            var catTitle = ul.previousElementSibling;
+            var showCat = (currentFilter === 'all') || vis > 0;
+            if (catTitle && catTitle.classList.contains('category-title')) {
+                catTitle.style.display = showCat ? '' : 'none';
+            }
+            if (vis > 0) anyVisible = true;
+        });
+        document.getElementById('emptyTip').style.display = anyVisible ? 'none' : 'block';
+    }
+
+    document.querySelectorAll('.chip[data-f]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.chip[data-f]').forEach(function (b) { b.classList.remove('on'); });
+            btn.classList.add('on');
+            currentFilter = btn.dataset.f;
+            applyFilter();
+        });
+    });
+
+    document.getElementById('btnClear').addEventListener('click', function () {
+        if (!confirm('确定要清空全部已读勾选吗？（自定义书目不会被删除）')) return;
+        readSet = {};
+        save(KEY_READ, []);
+        document.querySelectorAll('.book-check').forEach(function (b) { b.checked = false; });
+        currentFilter = 'all';
+        document.querySelectorAll('.chip[data-f]').forEach(function (b) {
+            b.classList.toggle('on', b.dataset.f === 'all');
+        });
+        applyFilter();
+        updateStats();
+    });
+
+    /* ---------- 添加自定义书目 ---------- */
+    var titleEl  = document.getElementById('bkTitle');
+    var authorEl = document.getElementById('bkAuthor');
+
+    function doAdd() {
+        var title = titleEl.value.trim();
+        if (!title) {
+            flash('请先填写书名', '#E74C3C');
+            titleEl.focus();
+            return;
+        }
+        var rec = {
+            id: 'c' + Date.now(),
+            title: title,
+            author: authorEl.value.trim(),
+            stage: document.getElementById('bkStage').value,
+            col:   document.getElementById('bkCol').value,
+            cat:   document.getElementById('bkCat').value
+        };
+        customList.push(rec);
+        save(KEY_CUSTOM, customList);
+        titleEl.value = ''; authorEl.value = '';
+        renderCustom();
+        flash('已添加：' + title + '（' + STAGE_NAME[rec.stage] + ' · ' + CAT_NAME[rec.cat] + '）', '#27AE60');
+        var ul = document.getElementById(rec.col + '-' + rec.stage + '-' + rec.cat);
+        if (ul && ul.lastElementChild) {
+            ul.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    var msgTimer = null;
+    function flash(text, color) {
+        var m = document.getElementById('addMsg');
+        m.textContent = text;
+        m.style.color = color;
+        clearTimeout(msgTimer);
+        msgTimer = setTimeout(function () { m.textContent = ''; }, 3000);
+    }
+
+    document.getElementById('btnAdd').addEventListener('click', doAdd);
+    [titleEl, authorEl].forEach(function (el) {
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') doAdd();
+        });
+    });
+
+    /* ---------- 初始化：绑定既有书目 ---------- */
+    document.querySelectorAll('.book-check').forEach(function (cb) {
+        cb.checked = !!readSet[keyOf(cb)];
+        cb.addEventListener('change', onCheck);
+    });
+    renderCustom();
+})();
+</script>
+
+</body>
+</html>
